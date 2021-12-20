@@ -18,6 +18,12 @@ class collage:
         self.color_type = color_type
         self.color_rate = color_rate
         self.n_frames = length_seconds * fps
+        if not os.path.isdir('../Original Videos'):
+            os.mkdir('../Original Videos')
+        if not os.path.isdir('../Original Videos - Backup'):
+            os.mkdir('../Original Videos - Backup')
+        if not os.path.isdir('../Resized Videos'):
+            os.mkdir('../Resized Videos')
         
     def record(self):
         
@@ -34,7 +40,7 @@ class collage:
         
         time_label = datetime.now().strftime('%H%M%S')
         out = cv2.VideoWriter(
-            './Original Videos/video'+time_label+'.avi',
+            '../Original Videos/video'+time_label+'.avi',
             cv2.VideoWriter_fourcc('M','J','P','G'),
             self.fps,
             (self.frame_width, self.frame_height))
@@ -59,7 +65,7 @@ class collage:
         cv2.destroyAllWindows()
         
         # Backup video file
-        shutil.copy('./Original Videos/video'+time_label+'.avi', './Original Videos - Backup/video'+time_label+'.avi')
+        shutil.copy('../Original Videos/video'+time_label+'.avi', '../Original Videos - Backup/video'+time_label+'.avi')
 
     def import_video(self, directory, filename):
         cap = cv2.VideoCapture(directory + filename)
@@ -98,8 +104,8 @@ class collage:
             out.write(buf_array[i,:,:,:])
             
     def build_collage(self):
-        original_filepath = './Original Videos/'
-        resized_filepath = './Resized Videos/'
+        original_filepath = '../Original Videos/'
+        resized_filepath = '../Resized Videos/'
         
         original_vid_list = os.listdir(original_filepath)
         resized_vid_list = os.listdir(resized_filepath)
@@ -182,7 +188,7 @@ class collage:
                 collage[i,:,:,:] = np.mod(collage[i,:,:,:] + color_val_start + color_direction * int(np.floor(self.color_rate*i)), 255)
         
         # Export collage
-        self.export_video(collage, './', 'collage_temp.avi')
+        self.export_video(collage, '../', 'collage_temp.avi')
 
 
 

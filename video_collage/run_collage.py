@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QSt
 import shutil
 import time
 
-fileName = 'collage.avi'
+fileName = '../collage.avi'
    
 def video_and_button_windows(videoplayer):
     
@@ -30,7 +30,7 @@ def button1_clicked():
    collage.build_collage()
    videoplayer.stop()
    time.sleep(5)
-   shutil.copy('collage_temp.avi', 'collage.avi')
+   shutil.copy('../collage_temp.avi', '../collage.avi')
    videoplayer.play()
    print("Ready to record.")
 

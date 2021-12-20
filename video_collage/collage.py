@@ -2,7 +2,6 @@ import cv2
 from datetime import datetime
 import shutil
 import numpy as np
-from matplotlib import pyplot as plt
 import os
 
 class collage:

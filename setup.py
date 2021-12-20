@@ -8,7 +8,12 @@ setup(name='video_collage',
       author_email='diebolav@gmail.com',
       license='MIT',
       packages=['video_collage'],
-      zip_safe=False)
+      zip_safe=False,
+      install_requires=[
+            'numpy==1.21.2',
+            'opencv==4.0.1',
+            'pyqt==5.9.2'
+      ])
 
 
 

@@ -9,11 +9,7 @@ setup(name='video_collage',
       license='MIT',
       packages=['video_collage'],
       zip_safe=False,
-      install_requires=[
-            'numpy==1.21.2',
-            'opencv-python>=4.0.1',
-            'PyQt5>=5.9'
-      ])
+      )
 
 
 

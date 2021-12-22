@@ -35,7 +35,7 @@ def button1_clicked():
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     
-    collage = collage(color_type='tile')
+    collage = collage(color_type='tile', length_seconds=5)
     videoplayer = video_player(fileName='../Videos/collage.avi')
     
     video_and_button_windows(videoplayer)

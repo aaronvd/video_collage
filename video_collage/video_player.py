@@ -3,14 +3,11 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QPushButton, QApplication,
                              QLabel, QFileDialog, QStyle, QVBoxLayout)
-
-import sys
  
 class video_player(QMainWindow):
     def __init__(self, fileName = 'collage.avi'):
         super().__init__()
         self.fileName = fileName
-        #self.setWindowTitle("PyQt5 Video Player") 
         self.setWindowFlags(Qt.CustomizeWindowHint)
  
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)

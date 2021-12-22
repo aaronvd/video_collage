@@ -178,9 +178,7 @@ class collage:
             indx_height = np.arange(indx_height_array[i]*tile_height, (indx_height_array[i]+1)*tile_height)
             indx_width = np.arange(indx_width_array[i]*tile_width, (indx_width_array[i]+1)*tile_width)
             collage[:,indx_height[:,None],indx_width, :] = buf[n_start:,:,:,:]               # omitting early frames to avoid fade in
-            
-        #plt.imshow(collage[100,:,:,:])
-        
+                    
         #---- Modify colors ----#
         # color values range from 0-255
         if self.color_type == 'cycle':

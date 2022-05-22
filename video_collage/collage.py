@@ -3,6 +3,12 @@ from datetime import datetime
 import shutil
 import numpy as np
 import os
+from PIL import Image, ImageEnhance
+
+def color_scale(image_in, out_max=255, out_min=0):
+    image_max = np.amax(image_in)
+    image_min = np.amin(image_in)
+    return (image_in - image_min)/(image_max - image_min) * (out_max - out_min) + out_min
 
 class collage:
     '''Container object for video recording, interpolation and tiling methods.'''
@@ -11,13 +17,15 @@ class collage:
             fps = 30, 
             length_seconds = 10,
             color_type = None,
-            color_rate = 1):
+            color_rate = 1,
+            build_type = 'fast'):
         self.fps = fps
         self.frame_length = int(1/fps * 1000) # in milliseconds
         self.length_seconds = length_seconds
         self.color_type = color_type
         self.color_rate = color_rate
         self.n_frames = length_seconds * fps
+        self.build_type = build_type
         if not os.path.isdir('../Videos'):
             os.mkdir('../Videos')
         if not os.path.isdir('../Videos/Original Videos'):
@@ -30,8 +38,8 @@ class collage:
     def record(self):
         
         # Create a VideoCapture object
-        #cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)   # external webcam
-        cap = cv2.VideoCapture(0)                 # computer webcam
+        cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)   # external webcam
+        # cap = cv2.VideoCapture(0)                 # computer webcam
         
         # Check if camera opened successfully
         if (cap.isOpened() == False):
@@ -104,6 +112,28 @@ class collage:
                               (frameWidth, frameHeight))
         for i in range(buf_array.shape[0]):
             out.write(buf_array[i,:,:,:])
+
+    def process_fx(self, buf):
+        if self.color_type == 'tile':
+            dist = np.zeros((3), dtype=np.uint8)
+            dist[np.random.randint(0,3)] = np.random.randint(50, 100)
+            buf += dist[None,None,None,:]
+            buf = color_scale(buf).astype(np.uint8)
+        
+        elif self.color_type == 'Pillow':
+            dist = np.zeros((buf.shape[1], buf.shape[2], 3), dtype=int)
+            dist[:,:,np.random.randint(0,3)] = 30*np.ones((buf.shape[1], buf.shape[2]), dtype=int)
+            for j in range(buf.shape[0]):
+                img = buf[j,:,:,::-1] + dist
+                img = color_scale(img).astype(np.uint8)
+                img = Image.fromarray(img)
+
+                saturation = ImageEnhance.Color(img)
+                # new_image = saturation.enhance(4)
+                # sharpness = ImageEnhance.Sharpness(new_image)
+                # buf[j,:,:,:] = np.asarray(sharpness.enhance(5))
+                buf[j,:,:,:] = np.asarray(saturation.enhance(4))
+        return buf
             
     def build_collage(self):
         original_filepath = '../Videos/Original Videos/'
@@ -145,6 +175,8 @@ class collage:
                         new_filename = i.split('.')[0] + '_resized.avi'
                         resized_video = self.resize_video(original_filepath, i,
                                                      tile_height, tile_width)
+                        if self.build_type == 'fast':
+                            resized_video = self.process_fx(resized_video)
                         self.export_video(resized_video, resized_filepath, new_filename)
                 
             else:
@@ -155,6 +187,8 @@ class collage:
                     new_filename = i.split('.')[0] + '_resized.avi'
                     resized_video = self.resize_video(original_filepath, i,
                                                  tile_height, tile_width)
+                    if self.build_type == 'fast':
+                            resized_video = self.process_fx(resized_video)
                     self.export_video(resized_video, resized_filepath, new_filename)
                 
         #---- Add videos to collage ----#
@@ -169,11 +203,11 @@ class collage:
         
         # Place videos
         for i in range(len(resized_vid_list)):
+            
             buf = self.import_video(resized_filepath, resized_vid_list[i])
-            if self.color_type == 'tile':
-                dist = np.zeros((3), dtype=np.uint8)
-                dist[np.random.randint(0,3)] = np.random.randint(50, 100)
-                buf += dist[None,None,None,:]
+
+            if self.build_type == 'slow':
+                buf = self.process_fx(buf)
 
             indx_height = np.arange(indx_height_array[i]*tile_height, (indx_height_array[i]+1)*tile_height)
             indx_width = np.arange(indx_width_array[i]*tile_width, (indx_width_array[i]+1)*tile_width)
